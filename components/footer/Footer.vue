@@ -1,25 +1,21 @@
 <template>
-  <div class="footer">
-    <div class="columns container">
-      <div class="column">
-        <p>Phasellus feugiat arcu sapien, et iaculis ipsum elementum sit amet.</p>
-      </div>
-    <div class="column has-text-right">
-      <p>Vuemmerce | Made with ❤</p>
+  <footer class="footer">
+    <div class="content has-text-centered">
+      <p>
+        <strong>https://www.bamundiexpress.com</strong>
+      </p>
     </div>
-    </div>
-  </div>
+  </footer>
 </template>
 
 <script>
 export default {
-  name: 'VmFooter',
-}
+  name: "VmFooter"
+};
 </script>
 
 <style lang="scss" scoped>
- .footer {
-   background: #b9e2fc;
-   color: black;
- }
+.footer {
+  background: #fafafa;
+}
 </style>
