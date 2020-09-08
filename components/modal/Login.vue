@@ -1,52 +1,126 @@
 <template>
-  <div :class="[ openModal ? 'is-active' : '', 'modal' ]">
+  <div :class="[openModal ? 'is-active' : '', 'modal']">
     <div class="modal-background"></div>
     <div class="modal-card">
       <header class="modal-card-head">
-          <p v-if="!isUserLoggedIn" class="modal-card-title">{{ modalTitle }}</p>
-          <p v-if="isUserLoggedIn" class="modal-card-title">{{ modalTitleLoggedIn }}</p>
-          <button class="delete" aria-label="close" @click="closeModal"></button>
+        <p v-if="!isUserLoggedIn" class="modal-card-title">{{ modalTitle }}</p>
+        <p v-if="isUserLoggedIn" class="modal-card-title">
+          {{ modalTitleLoggedIn }}
+        </p>
+        <button class="delete" aria-label="close" @click="closeModal"></button>
       </header>
       <form @submit="checkForm" action="#" method="post">
         <section class="modal-card-body">
           <div v-if="!isUserLoggedIn">
             <div class="field">
+              <div class="buttons">
+                <a class="button is-fullwidth" @click="authenticate('google')">
+                  <span class="icon">
+                    <i class="fa fa-google"></i>
+                  </span>
+                  <span>
+                    Login with Google
+                  </span>
+                </a>
+                <a
+                  class="button is-fullwidth"
+                  @click="authenticate('facebook')"
+                >
+                  <span class="icon">
+                    <i class="fa fa-facebook"></i>
+                  </span>
+                  <span> Login with Facebook</span>
+                </a>
+              </div>
+            </div>
+
+            <div class="has-text-centered p-2">
+              Or
+            </div>
+
+            <div class="field">
               <p class="control has-icons-left has-icons-right">
-                  <input
-                    :class="[highlightEmailWithError ? 'input is-danger' : 'input']"
-                    type="email"
-                    :placeholder="emailPlaceholder"
-                    name="emailName"
-                    v-model="email"
-                    @keyup="checkEmailOnKeyUp(email)"
-                  >
-                  <span class="icon is-small is-left">
-                    <i class="fa fa-envelope"></i>
-                  </span>
-                  <span v-if="highlightEmailWithError !== null" class="icon is-small is-right">
-                    <i :class="[highlightEmailWithError ? 'fa fa-exclamation-circle' : 'fa fa-check']"></i>
-                  </span>
-                </p>
-                <p v-if="highlightEmailWithError" class="help is-danger">{{ emailRequiredLabel }}</p>
+                <input
+                  :class="[
+                    highlightEmailWithError ? 'input is-danger' : 'input'
+                  ]"
+                  type="email"
+                  :placeholder="emailPlaceholder"
+                  name="emailName"
+                  v-model="email"
+                  @keyup="checkEmailOnKeyUp(email)"
+                />
+                <span class="icon is-small is-left">
+                  <i class="fa fa-envelope"></i>
+                </span>
+                <span
+                  v-if="highlightEmailWithError !== null"
+                  class="icon is-small is-right"
+                >
+                  <i
+                    :class="[
+                      highlightEmailWithError
+                        ? 'fa fa-exclamation-circle'
+                        : 'fa fa-check'
+                    ]"
+                  ></i>
+                </span>
+              </p>
+              <p v-if="highlightEmailWithError" class="help is-danger">
+                {{ emailRequiredLabel }}
+              </p>
             </div>
             <div class="field">
               <p class="control has-icons-left has-icons-right">
-                <input 
-                  :class="[highlightPasswordWithError ? 'input is-danger' : 'input']"
+                <input
+                  :class="[
+                    highlightPasswordWithError ? 'input is-danger' : 'input'
+                  ]"
                   type="password"
                   placeholder="Your password"
                   name="passwordName"
                   v-model="password"
                   @keyup="checkPasswordOnKeyUp(password)"
-                >
+                />
                 <span class="icon is-small is-left">
                   <i class="fa fa-lock"></i>
                 </span>
-                <span v-if="highlightPasswordWithError !== null" class="icon is-small is-right">
-                  <i :class="[highlightPasswordWithError ? 'fa fa-exclamation-circle' : 'fa fa-check']"></i>
+                <span
+                  v-if="highlightPasswordWithError !== null"
+                  class="icon is-small is-right"
+                >
+                  <i
+                    :class="[
+                      highlightPasswordWithError
+                        ? 'fa fa-exclamation-circle'
+                        : 'fa fa-check'
+                    ]"
+                  ></i>
                 </span>
               </p>
-              <p v-if="highlightPasswordWithError" class="help is-danger">{{ passwordRequiredLabel }}</p>
+              <p v-if="highlightPasswordWithError" class="help is-danger">
+                {{ passwordRequiredLabel }}
+              </p>
+            </div>
+
+            <div class="field">
+              <p class="control has-icons-left has-icons-right">
+                <span
+                  v-if="highlightInvalidCredentials !== null"
+                  class="icon is-small is-right"
+                >
+                  <i
+                    :class="[
+                      highlightInvalidCredentials
+                        ? 'fa fa-exclamation-circle'
+                        : 'fa fa-check'
+                    ]"
+                  ></i>
+                </span>
+              </p>
+              <p v-if="highlightInvalidCredentials" class="help is-danger">
+                {{ invalidCredentails }}
+              </p>
             </div>
           </div>
           <div v-if="isUserLoggedIn" class="level">
@@ -59,8 +133,17 @@
           </div>
         </section>
         <footer class="modal-card-foot">
-          <button v-if="!isUserLoggedIn" type="submit" class="button is-info">{{ primaryBtnLabel }}</button>
-          <button v-if="isUserLoggedIn" type="button" class="button is-info" @click="closeModal">{{ btnLoggedInLabel }}</button>
+          <button v-if="!isUserLoggedIn" type="submit" class="button is-info">
+            {{ primaryBtnLabel }}
+          </button>
+          <button
+            v-if="isUserLoggedIn"
+            type="button"
+            class="button is-info"
+            @click="closeModal"
+          >
+            {{ btnLoggedInLabel }}
+          </button>
         </footer>
       </form>
     </div>
@@ -68,34 +151,41 @@
 </template>
 
 <script>
-import { isValidEmail } from '@/assets/validators';
+import { isValidEmail } from "@/assets/validators";
+import { GOOGLE_AUTH_URL, FACEBOOK_AUTH_URL } from "../../constants";
 
 export default {
-  name: 'login',
+  name: "login",
 
-  data () {
+  data() {
     return {
-      modalTitle: 'Log in',
-      modalTitleLoggedIn: 'Welcome!',
-      primaryBtnLabel: 'Log in',
-      emailRequiredLabel: 'Email required',
-      passwordRequiredLabel: 'Password required',
-      emailNotValidLabel: 'Valid email required',
-      btnLoggedInLabel: 'Close',
-      emailPlaceholder: 'Your email',
-      email: '',
-      password: '',
+      modalTitle: "Log in",
+      modalTitleLoggedIn: "Welcome!",
+      primaryBtnLabel: "Log in",
+      emailRequiredLabel: "Email required",
+      passwordRequiredLabel: "Password required",
+      emailNotValidLabel: "Valid email required",
+      btnLoggedInLabel: "Close",
+      emailPlaceholder: "Your email",
+      invalidCredentails: "Your email and password are not correct.",
+      email: "",
+      password: "",
       highlightEmailWithError: null,
       highlightPasswordWithError: null,
-      isFormSuccess: false
+      highlightInvalidCredentials: null,
+      isFormSuccess: false,
+      providers: {
+        facebook: FACEBOOK_AUTH_URL,
+        google: GOOGLE_AUTH_URL
+      }
     };
   },
 
   computed: {
-    isUserLoggedIn () {
+    isUserLoggedIn() {
       return this.$store.getters.isUserLoggedIn;
     },
-    openModal () {
+    openModal() {
       if (this.$store.getters.isLoginModalOpen) {
         return true;
       } else {
@@ -105,18 +195,11 @@ export default {
   },
 
   methods: {
-    closeModal () {
-      this.$store.commit('showLoginModal', false);
+    closeModal() {
+      this.$store.commit("showLoginModal", false);
     },
-    checkForm (e) {
+    checkForm(e) {
       e.preventDefault();
-
-      if (this.email && this.password) {
-        this.highlightEmailWithError = false;
-        this.highlightPasswordWithError = false;
-        this.isFormSuccess = true;
-        this.$store.commit('isUserLoggedIn', this.isFormSuccess);
-      }
 
       if (!this.email) {
         this.highlightEmailWithError = true;
@@ -133,8 +216,26 @@ export default {
       } else {
         this.highlightPasswordWithError = false;
       }
+
+      if (this.email && this.password) {
+        this.highlightEmailWithError = false;
+        this.highlightPasswordWithError = false;
+        this.isFormSuccess = true;
+
+        this.$store
+          .dispatch("login", {
+            email: this.email,
+            password: this.password
+          })
+          .then(user => {
+            this.highlightInvalidCredentials = false;
+          })
+          .catch(error => {
+            this.highlightInvalidCredentials = true;
+          });
+      }
     },
-    checkEmailOnKeyUp (emailValue) {
+    checkEmailOnKeyUp(emailValue) {
       if (emailValue && isValidEmail(emailValue)) {
         this.highlightEmailWithError = false;
       } else {
@@ -145,12 +246,17 @@ export default {
         }
       }
     },
-    checkPasswordOnKeyUp (passwordValue) {
+    checkPasswordOnKeyUp(passwordValue) {
       if (passwordValue) {
         this.highlightPasswordWithError = false;
       } else {
         this.highlightPasswordWithError = true;
       }
+    },
+    authenticate(provider) {
+      const url = this.providers[provider];
+
+      window.open(url, "_self");
     }
   }
 };
@@ -164,5 +270,3 @@ export default {
   color: green;
 }
 </style>
-
-

@@ -26,9 +26,11 @@
 
       <div class="navbar-menu is-active">
         <div class="navbar-start">
-          <div class="navbar-item field">
+          <div class="navbar-item field ">
             অর্ডার করতে কল করুন:
-            <strong class="has-text-primary">01722273000</strong>
+            <a class="pl-2 has-text-primary" href="tel:01722273000"
+              >01722273000</a
+            >
           </div>
         </div>
 
