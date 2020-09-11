@@ -16,7 +16,8 @@ export const state = () => ({
   systemInfo: {
     openLoginModal: false,
     openSignupModal: false,
-    openCheckoutModal: false
+    openCheckoutModal: false,
+    openPhoneNumberModal: false
   },
   cartItems: []
 });
@@ -54,6 +55,9 @@ export const getters = {
   isCheckoutModalOpen: state => {
     return state.systemInfo.openCheckoutModal;
   },
+  isPhoneNumberModalOpen: state => {
+    return state.systemInfo.openPhoneNumberModal;
+  },
   quantity: state => {
     return state.products.quantity;
   }
@@ -80,6 +84,9 @@ export const mutations = {
     );
   },
   isUserLoggedIn: (state, isUserLoggedIn) => {
+    if (!isUserLoggedIn) {
+      Cookie.remove("auth");
+    }
     state.userInfo.isLoggedIn = isUserLoggedIn;
   },
   isUserSignedUp: (state, isSignedUp) => {
@@ -106,7 +113,9 @@ export const mutations = {
   showCheckoutModal: (state, show) => {
     state.systemInfo.openCheckoutModal = show;
   },
-
+  showPhoneNumberModal: (state, show) => {
+    state.systemInfo.openPhoneNumberModal = show;
+  },
   quantity: (state, data) => {
     state.cartItems.forEach(el => {
       if (data.id === el.id) {

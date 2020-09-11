@@ -26,7 +26,7 @@
 
       <div class="navbar-menu is-active">
         <div class="navbar-start">
-          <div class="navbar-item field ">
+          <div class="navbar-item field">
             অর্ডার করতে কল করুন:
             <a class="pl-2 has-text-primary" href="tel:01722273000"
               >01722273000</a
@@ -61,7 +61,6 @@
 
 <script>
 import VmMenu from "../menu/Menu";
-import VmSearch from "../search/Search";
 
 export default {
   name: "VmHeader",
@@ -78,7 +77,6 @@ export default {
   },
 
   components: {
-    VmSearch,
     VmMenu
   },
 

@@ -29,7 +29,7 @@
                 cartItem.quantity > 0 ? ` - Quantity: ${cartItem.quantity}` : ""
               }}
             </p>
-            <p>{{ cartItem.product.price }} &euro;</p>
+            <p>{{ cartItem.product.price }} TK</p>
           </div>
           <div v-if="cartItems.length === 0">
             <p>{{ cartEmptyLabel }}</p>
@@ -110,7 +110,7 @@ export default {
       } else {
         productLabel = "product";
       }
-      return `Buy ${totalProducts} ${productLabel} at ${finalPrice}€`;
+      return `Buy ${totalProducts} ${productLabel} at ${finalPrice} TK`;
     },
     isUserLoggedIn() {
       return this.$store.getters.isUserLoggedIn;
@@ -137,7 +137,7 @@ export default {
         this.isCheckoutSection = true;
       } else {
         this.$store.commit("showCheckoutModal", false);
-        this.$store.commit("showLoginModal", true);
+        this.$store.commit("showPhoneNumberModal", true);
       }
     },
     onPrevBtn() {
