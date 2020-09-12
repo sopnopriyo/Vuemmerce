@@ -4,11 +4,7 @@
     <div class="modal-card">
       <header class="modal-card-head">
         <p class="modal-card-title">{{ modalTitle }}</p>
-        <button
-          class="delete"
-          aria-label="close"
-          @click="closeModal(false)"
-        ></button>
+        <button class="delete" aria-label="close" @click="closeModal(false)"></button>
       </header>
       <section class="modal-card-body">
         <div class="field" v-if="!isOrderCompleted">
@@ -17,15 +13,29 @@
               class="input"
               type="tel"
               placeholder="01722273000"
-              v-model="mobileNumber"
+              v-model="phoneNumber"
+              :class="[
+                    highlightPhoneNumberWithError ? 'input is-danger' : 'input'
+                  ]"
+              @keyup="checkPhoneNumberOnKeyUp(phoneNumber)"
             />
             <span class="icon is-small is-left">
               <i class="fa fa-phone"></i>
             </span>
-            <span class="icon is-small is-right">
-              <i class="fas fa-check"></i>
+            <span v-if="highlightPhoneNumberWithError !== null" class="icon is-small is-right">
+              <i
+                :class="[
+                      highlightPhoneNumberWithError
+                        ? 'fa fa-exclamation-circle'
+                        : 'fa fa-check'
+                    ]"
+              ></i>
             </span>
           </p>
+          <p
+            v-if="highlightPhoneNumberWithError"
+            class="help is-danger"
+          >{{ phoneNumberRequiredLabel }}</p>
         </div>
         <div v-else>
           <p>You bought it :-)</p>
@@ -36,18 +46,15 @@
           class="button is-success"
           v-if="!isOrderCompleted"
           @click="orderNow()"
-        >
-          {{ buyLabel }}
-        </button>
-        <button class="button is-success" v-else @click="closeModal(true)">
-          {{ closeLabel }}
-        </button>
+        >{{ buyLabel }}</button>
+        <button class="button is-success" v-else @click="closeModal(true)">{{ closeLabel }}</button>
       </footer>
     </div>
   </div>
 </template>
 
 <script>
+import { isValidPhoneNumber } from "@/assets/validators";
 export default {
   name: "PhoneNumber",
 
@@ -56,8 +63,12 @@ export default {
       modalTitle: "Your Phone Number",
       closeLabel: "Close",
       buyLabel: "Buy Now",
-      mobileNumber: "",
-      isOrderCompleted: false
+      phoneNumber: "",
+      phoneNumberRequiredLabel: "Phone Number required",
+      emailNotValidLabel: "Valid phone number required",
+      highlightPhoneNumberWithError: null,
+
+      isOrderCompleted: false,
     };
   },
 
@@ -71,10 +82,21 @@ export default {
       } else {
         return false;
       }
-    }
+    },
   },
 
   methods: {
+    checkPhoneNumberOnKeyUp(phoneNumber) {
+      if (phoneNumber && isValidPhoneNumber(phoneNumber)) {
+        this.highlightPhoneNumberWithError = false;
+      } else {
+        this.highlightPhoneNumberWithError = true;
+
+        if (!isValidPhoneNumber(phoneNumber)) {
+          this.phoneNumberRequiredLabel = this.emailNotValidLabel;
+        }
+      }
+    },
     orderNow() {
       this.isOrderCompleted = true;
     },
@@ -84,7 +106,7 @@ export default {
       if (reloadPage) {
         window.location.reload();
       }
-    }
-  }
+    },
+  },
 };
 </script>
