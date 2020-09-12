@@ -131,6 +131,9 @@ export const mutations = {
   },
   SET_PRODUCT(state, product) {
     state.product = product;
+  },
+  SET_CART_ITMES(state, cartItems) {
+    state.cartItems = cartItems;
   }
 };
 
@@ -192,7 +195,24 @@ export const actions = {
         });
     });
   },
-
+  placeOrder({ commit, state }, phoneNumber) {
+    const requestBody = {
+      productOrders: state.cartItems,
+      phoneNumber
+    };
+    return new Promise((resolve, reject) => {
+      return this.$axios
+        .post("/api/orders", requestBody)
+        .then(response => {
+          commit("SET_CART_ITMES", []);
+          resolve(response.data);
+        })
+        .catch(error => {
+          console.log(error);
+          reject(error);
+        });
+    });
+  },
   loginByToken({ commit }, token) {
     return new Promise((resolve, reject) => {
       this.$axios.setToken(token, "Bearer");

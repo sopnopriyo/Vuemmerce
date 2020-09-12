@@ -38,12 +38,13 @@
           >{{ phoneNumberRequiredLabel }}</p>
         </div>
         <div v-else>
-          <p>You bought it :-)</p>
+          <p>{{finalOrderMessage}}</p>
         </div>
       </section>
       <footer class="modal-card-foot">
         <button
           class="button is-success"
+          :disabled="!isNumberValid()"
           v-if="!isOrderCompleted"
           @click="orderNow()"
         >{{ buyLabel }}</button>
@@ -62,12 +63,12 @@ export default {
     return {
       modalTitle: "Your Phone Number",
       closeLabel: "Close",
-      buyLabel: "Buy Now",
+      buyLabel: "Order Now",
       phoneNumber: "",
       phoneNumberRequiredLabel: "Phone Number required",
       emailNotValidLabel: "Valid phone number required",
       highlightPhoneNumberWithError: null,
-
+      finalOrderMessage: "",
       isOrderCompleted: false,
     };
   },
@@ -97,12 +98,29 @@ export default {
         }
       }
     },
+    isNumberValid() {
+      return isValidPhoneNumber(this.phoneNumber);
+    },
     orderNow() {
-      this.isOrderCompleted = true;
+      this.$store
+        .dispatch("placeOrder", this.phoneNumber)
+        .then((data) => {
+          this.finalOrderMessage =
+            "Your order has been created successfully. Our customer service will call you at :" +
+            this.phoneNumber;
+          this.isOrderCompleted = true;
+        })
+        .catch((errors) => {
+          this.finalOrderMessage =
+            "Sorry, our server is down now. Please contact : 01722273000";
+          this.isOrderCompleted = true;
+
+          console.log("error happend");
+        });
     },
     closeModal(reloadPage) {
       this.$store.commit("showPhoneNumberModal", false);
-
+      this.finalOrderMessage = "";
       if (reloadPage) {
         window.location.reload();
       }
