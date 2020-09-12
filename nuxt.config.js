@@ -148,6 +148,6 @@ module.exports = {
     proxy: true // Can be also an object with default options
   },
   proxy: {
-    "/api/": "http://bamundiexpress.com"
+    "/api/": "https://bamundiexpress.com"
   }
 };
