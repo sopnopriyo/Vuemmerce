@@ -7,44 +7,62 @@
         <button class="delete" aria-label="close" @click="closeModal(false)"></button>
       </header>
       <section class="modal-card-body">
-        <div class="field" v-if="!isOrderCompleted">
-          <p class="control has-icons-left has-icons-right">
-            <input
-              class="input"
-              type="tel"
-              placeholder="01722273000"
-              v-model="phoneNumber"
-              :class="[
+        <div v-if="!isOrderCompleted">
+          <div class="field">
+            <p class="control has-icons-left has-icons-right">
+              <input
+                class="input"
+                type="tel"
+                placeholder="01722273000"
+                v-model="form.phoneNumber"
+                :class="[
                     highlightPhoneNumberWithError ? 'input is-danger' : 'input'
                   ]"
-              @keyup="checkPhoneNumberOnKeyUp(phoneNumber)"
-            />
-            <span class="icon is-small is-left">
-              <i class="fa fa-phone"></i>
-            </span>
-            <span v-if="highlightPhoneNumberWithError !== null" class="icon is-small is-right">
-              <i
-                :class="[
+                @keyup="checkPhoneNumberOnKeyUp(form.phoneNumber)"
+              />
+              <span class="icon is-small is-left">
+                <i class="fa fa-phone"></i>
+              </span>
+              <span v-if="highlightPhoneNumberWithError !== null" class="icon is-small is-right">
+                <i
+                  :class="[
                       highlightPhoneNumberWithError
                         ? 'fa fa-exclamation-circle'
                         : 'fa fa-check'
                     ]"
-              ></i>
-            </span>
-          </p>
-          <p
-            v-if="highlightPhoneNumberWithError"
-            class="help is-danger"
-          >{{ phoneNumberRequiredLabel }}</p>
+                ></i>
+              </span>
+            </p>
+            <p
+              v-if="highlightPhoneNumberWithError"
+              class="help is-danger"
+            >{{ phoneNumberRequiredLabel }}</p>
+          </div>
+          <div class="field">
+            <div class="control has-icons-left">
+              <div class="select is-fullwidth">
+                <select v-model="form.location">
+                  <option disabled value>Select your location</option>
+                  <option v-for="location in locationList" :key="location">{{location}}</option>
+                </select>
+              </div>
+              <div class="icon is-small is-left">
+                <i class="fa fa-globe"></i>
+              </div>
+            </div>
+            <p class="help is-danger" v-if="!isLocationValid">{{ locationRequiredLabel }}</p>
+          </div>
         </div>
+
         <div v-else>
+          <img src="/order-completed.png" alt srcset />
           <p>{{finalOrderMessage}}</p>
         </div>
       </section>
       <footer class="modal-card-foot">
         <button
           class="button is-success"
-          :disabled="!isNumberValid()"
+          :disabled="!isSubmitDisabled()"
           v-if="!isOrderCompleted"
           @click="orderNow()"
         >{{ buyLabel }}</button>
@@ -64,8 +82,13 @@ export default {
       modalTitle: "Your Phone Number",
       closeLabel: "Close",
       buyLabel: "Order Now",
-      phoneNumber: "",
+      form: {
+        phoneNumber: "",
+        location: "",
+      },
+      locationList: ["Bamundi", "Kallanpur", "Karamdi"],
       phoneNumberRequiredLabel: "Phone Number required",
+      locationRequiredLabel: "Location is required",
       emailNotValidLabel: "Valid phone number required",
       highlightPhoneNumberWithError: null,
       finalOrderMessage: "",
@@ -76,6 +99,9 @@ export default {
   computed: {
     isUserLoggedIn() {
       return this.$store.getters.isUserLoggedIn;
+    },
+    isLocationValid() {
+      return this.form.location != "";
     },
     openModal() {
       if (this.$store.getters.isPhoneNumberModalOpen) {
@@ -98,16 +124,20 @@ export default {
         }
       }
     },
-    isNumberValid() {
-      return isValidPhoneNumber(this.phoneNumber);
+    isSubmitDisabled() {
+      return isValidPhoneNumber(this.form.phoneNumber) && this.isLocationValid;
     },
     orderNow() {
+      if (!this.form.location) {
+        this.isLocationValid = false;
+        return;
+      }
       this.$store
         .dispatch("placeOrder", this.phoneNumber)
         .then((data) => {
           this.finalOrderMessage =
             "Your order has been created successfully. Our customer service will call you at :" +
-            this.phoneNumber;
+            this.form.phoneNumber;
           this.isOrderCompleted = true;
         })
         .catch((errors) => {

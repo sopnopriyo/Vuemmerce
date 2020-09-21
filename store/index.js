@@ -142,8 +142,9 @@ export const actions = {
     if (req.headers.cookie) {
       const parsed = cookieparser.parse(req.headers.cookie);
       try {
-        this.$axios.setToken(parsed.auth, "Bearer");
-        const res = await this.$axios.get("/api/account");
+        // this.$axios.setToken(parsed.auth, "Bearer");
+        this.$axios.setHeader("Authorization", "Bearer " + parsed.auth);
+        const res = await this.$axios.$get("/api/account");
 
         if (res && res.data) {
           commit("SET_USER", res.data);
